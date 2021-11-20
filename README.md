@@ -40,7 +40,7 @@
   
 ## VPSのプラン一覧取得
 
-> 参考 : https://www.conoha.jp/docs/compute-get_flavors_list.php
+> 参考 : https://www.conoha.jp/docs/compute-get_flavors_detail.php
 
 * リクエスト
   ```
@@ -114,3 +114,18 @@
   }
   ```
   `name`の末尾に`d30`または`d100`とついているプランが現プラン。(2021/11/21時点)
+
+TODO: imageRef 設定値の取得方法
+
+## サーバー追加
+
+> 参考 : https://www.conoha.jp/docs/compute-create_vm.php
+
+* リクエスト
+  ```
+  curl -i -X POST \
+  -H "Accept: application/json" \
+  -H "X-Auth-Token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+  -d '{"server": {"adminPass": "rootパスワード","imageRef": "","flavorRef": "VPSのプランに紐づくID"}}' \
+  https://compute.tyo1.conoha.io/v2/1864e71d2deb46f6b47526b69c65a45d/servers
+  ```
