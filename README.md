@@ -227,33 +227,44 @@ ${Compute ServiceのURL}/servers/${サーバID}/action
   ```
   
 * レスポンス
-```json
-  {
-      "image": {
-          "status": "ACTIVE",
-          "updated": "2021-11-21T00:19:29Z",
-          "links": [
-          ],
-          "id": "${イメージID}",
-          "OS-EXT-IMG-SIZE:size": 20026818560,
-          "name": "Temporary",
-          "created": "2021-11-21T00:16:15Z",
-          "minDisk": 30,
-          "server": {
-              "id": "${サーバID}",
-              "links": [
-              ]
-          },
-          "progress": 100,
-          "minRam": 0,
-          "metadata": {
-              "instance_uuid": "${サーバID}",
-              "dst": "Ubuntu-20.04-64bit",
-              "hw_qemu_guest_agent": "yes",
-              "display_order": "165",
-              "os_type": "lin"
-          }
-      }
-  }
-```
+  ```json
+    {
+        "image": {
+            "status": "ACTIVE",
+            "updated": "2021-11-21T00:19:29Z",
+            "links": [
+            ],
+            "id": "${イメージID}",
+            "OS-EXT-IMG-SIZE:size": 20026818560,
+            "name": "Temporary",
+            "created": "2021-11-21T00:16:15Z",
+            "minDisk": 30,
+            "server": {
+                "id": "${サーバID}",
+                "links": [
+                ]
+            },
+            "progress": 100,
+            "minRam": 0,
+            "metadata": {
+                "instance_uuid": "${サーバID}",
+                "dst": "Ubuntu-20.04-64bit",
+                "hw_qemu_guest_agent": "yes",
+                "display_order": "165",
+                "os_type": "lin"
+            }
+        }
+    }
+  ```
 `status`が`ACTIVE`であれば利用可能。
+
+## サーバ削除
+
+* リクエスト
+
+  ```
+  curl -i -X DELETE \
+  -H "Accept: application/json" \
+  -H "X-Auth-Token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+  ${Compute ServiceのURL}/${サーバID}
+  ```
