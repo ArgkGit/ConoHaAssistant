@@ -1,6 +1,6 @@
 # ConoHaAssistant
 
-GMOのConoHa APIを用いた操作をコマンドで実現します。   
+GMOのConoHa APIを用いた操作を簡単なコマンドで実現します。   
 使用していない時間帯は自動的にサーバーを削除し、利用料金を節約することを目的に開発しました。  
 サーバー追加の際は https://manage.conoha.jp/ServiceImage/ のイメージリストに表示されるイメージを利用します。
 
