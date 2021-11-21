@@ -7,9 +7,9 @@ def get_tokens(auth_dict, endpoint_dict):
 
   url = endpoint_dict['IdentityService'] + '/tokens'
 
-  res_dict = requests.post(url, data = json.dumps(auth_dict)).json()
+  tokens_dict = requests.post(url, data = json.dumps(auth_dict)).json()
   with open('json/tokens.json', 'w') as f:
-    json.dump(res_dict, f, indent=4)
+    json.dump(tokens_dict, f, indent=4)
 
 if __name__ == '__main__':
   print('https://manage.conoha.jp/API/ に表示されるAPI情報を入力してください。')
