@@ -55,20 +55,6 @@
   {
       "flavors": [
           {
-          },
-          {
-          },
-          {
-          },
-          {
-          },
-          {
-          },
-          {
-          },
-          {
-          },
-          {
               "name": "g-c1m512d30",
               "links": [
               ],
@@ -83,18 +69,6 @@
               "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
           },
           {
-          },
-          {
-          },
-          {
-          },
-          {
-          },
-          {
-          },
-          {
-          },
-          {
               "name": "g-512mb",
               "links": [
               ],
@@ -107,15 +81,11 @@
               "OS-FLV-EXT-DATA:ephemeral": 0,
               "disk": 20,
               "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          },
-          {
           }
       ]
   }
   ```
   `name`の末尾に`d30`または`d100`とついているプランが現プラン。(2021/11/21時点)
-
-TODO: imageRef 設定値の取得方法
 
 ## サーバー追加
 
@@ -126,7 +96,7 @@ TODO: imageRef 設定値の取得方法
   curl -i -X POST \
   -H "Accept: application/json" \
   -H "X-Auth-Token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
-  -d '{"server": {"adminPass": "rootパスワード","imageRef": "","flavorRef": "VPSのプランに紐づくID"}}' \
+  -d '{"server": {"adminPass": "rootパスワード","imageRef": "${イメージID}","flavorRef": "${VPSのプランに紐づくID"}' \
   ${Compute ServiceのURL}/servers
   ```
 
