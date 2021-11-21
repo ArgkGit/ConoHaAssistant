@@ -4,7 +4,10 @@ import requests
 import json
 import argparse
 import datetime
+import time
+
 import identitiy
+import network
 
 endpoint_dict = json.load(open('json/endpoint.json', 'r'))
 tokens_dict = json.load(open('json/tokens.json', 'r'))
@@ -24,6 +27,19 @@ def get_flavors_detail():
 
 def get_images():
   return requests.get(endpoint_dict['ComputeService'] + '/images', headers=headers).json()
+
+def get_image_id(image_name):
+  images_dict = get_images()
+  for image_dict in images_dict['images']:
+    if image_name == image_dict['name']:
+      return image_dict['id']
+
+def get_images_detail_specified(image_id):
+  return requests.get(endpoint_dict['ComputeService'] + '/images/' + image_id, headers=headers).json()
+
+def get_vms_detail_specified():
+  created_server_dict = json.load(open('json/created_server.json', 'r'))
+  return requests.get(endpoint_dict['ComputeService'] + '/servers/' + created_server_dict['server']['id'], headers=headers).json()
 
 def create_vm(args):
   images_dict = get_images()
@@ -47,13 +63,11 @@ def create_vm(args):
     print("メモリ: " + str(flavor_dict['ram']) + "MB, CPU: " + str(flavor_dict['vcpus']) + "コア, ディスク容量: " +  str(flavor_dict['disk']) + "GB")
 
   plan_id = input('使用したいプランID: ')
-  admin_pass = input("rootパスワード: ")
 
   server_dict = {
     "server": {
         "imageRef": image_id,
-        "flavorRef": plan_id,
-        "adminPass":admin_pass
+        "flavorRef": plan_id
     }
   }
 
@@ -63,18 +77,41 @@ def create_vm(args):
   with open('json/created_server.json', 'w') as f:
     json.dump(created_server_dict, f, indent=4)
 
+  # ステータスがACTIVE(起動中)になるまでポーリング(最大5分)
+  print('構築中', end='', flush=True)
+  for index in range(30):
+    vms_detail_dict = get_vms_detail_specified()
+    if vms_detail_dict['server']['status'] == 'ACTIVE':
+      break
+    print('.', end='', flush=True)
+    time.sleep(10)
+  print('起動しました', end='')
+
 def stop_cleanly_vm(args):
   created_server_dict = json.load(open('json/created_server.json', 'r'))
   url = endpoint_dict['ComputeService'] + '/servers/' + created_server_dict['server']['id'] +'/action'
   print(requests.post(url, data = '{"os-stop": null}', headers=headers))
 
 def create_image(args):
-  name = input('イメージ名: ')
+  image_name = input('イメージ名: ')
   created_server_dict = json.load(open('json/created_server.json', 'r'))
   url = endpoint_dict['ComputeService'] + '/servers/' + created_server_dict['server']['id'] +'/action'
 
-  # 409のときはシャットダウンされていない可能性あり
-  print(requests.post(url, data = '{"createImage": {"name": name}}', headers=headers))
+  res = requests.post(url, data = '{"createImage": {"name": "' + image_name +'"}}', headers=headers)
+  if res.status_code != 202: 
+    print(res.reason)
+    return
+
+  image_id = get_image_id(image_name)
+  # ステータスがACTIVE(利用可能)になるまでポーリング(最大5分)
+  print('保存中', end='', flush=True)
+  for index in range(30):
+    image_detail_dict = get_images_detail_specified(image_id)
+    if image_detail_dict['image']['status'] == 'ACTIVE':
+      break
+    print('.', end='', flush=True)
+    time.sleep(10)
+  print('イメージが利用可能になりました')
 
 def delete_vm(args):
   created_server_dict = json.load(open('json/created_server.json', 'r'))
