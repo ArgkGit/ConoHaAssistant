@@ -57,17 +57,19 @@ def create_vm(args):
 def stop_cleanly_vm(args):
   created_server_dict = json.load(open('json/created_server.json', 'r'))
   url = endpoint_dict['ComputeService'] + '/servers/' + created_server_dict['server']['id'] +'/action'
-  requests.post(url, data = '{"os-stop": null}', headers=headers)
+  print(requests.post(url, data = '{"os-stop": null}', headers=headers))
 
 def create_image(args):
+  name = input('イメージ名: ')
   created_server_dict = json.load(open('json/created_server.json', 'r'))
   url = endpoint_dict['ComputeService'] + '/servers/' + created_server_dict['server']['id'] +'/action'
-  requests.post(url, data = '{"createImage": {"name": "Temporary"}}', headers=headers)
+
+  # 409のときはシャットダウンされていない可能性あり
+  print(requests.post(url, data = '{"createImage": {"name": name}}', headers=headers))
 
 def delete_vm(args):
   created_server_dict = json.load(open('json/created_server.json', 'r'))
   url = endpoint_dict['ComputeService'] + '/servers/' + created_server_dict['server']['id']
-
   print(requests.delete(url, headers=headers))
 
 if __name__ == '__main__':
