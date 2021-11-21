@@ -68,7 +68,7 @@ $ python3 compute.py create_image
 
 事前にイメージ名を`-name`オプションでで指定することもできます。  
 ```
-$ python3 compute.py create_image -name Temporary
+$ python3 compute.py create_image -name YuiAragaki
 ```
 
 ## サーバ削除
