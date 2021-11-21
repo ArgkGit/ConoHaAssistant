@@ -34,8 +34,8 @@ $ python3 identitiy.py post_tokens
 > 参考  
 > https://www.conoha.jp/docs/compute-create_vm.php  
 
-`post_tokens`コマンド実行中に指定した値の情報は `json/create_vm_conf.json` に保存され、次回実行時に使用されます。  
-追加されたサーバーの情報は `json/created_server.json` に保存され、以降のコマンドで使用されます。  
+`post_tokens`コマンド実行中に入力した値の情報は `json/create_vm_conf.json` に保存され、次回実行時に使用されます。  
+追加されたサーバーの情報は `json/created_server.json` に保存され、他のコマンドで使用されます。  
 `json/created_server.json` はサーバー追加の度に上書きされるため、コマンド操作できるのは最後に追加されたサーバーのみです。  
 
 ```
@@ -66,7 +66,7 @@ $ python3 compute.py stop_cleanly_vm
 $ python3 compute.py create_image
 ```
 
-事前にイメージ名を`-name`オプションでで指定することもできます。  
+事前にイメージ名を`-name`オプションで指定することもできます。  
 ```
 $ python3 compute.py create_image -name YuiAragaki
 ```
