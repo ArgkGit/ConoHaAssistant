@@ -269,6 +269,7 @@ ${Compute ServiceのURL}/servers/${サーバID}/action
           "server": {
               "id": "${サーバID}",
               "links": [
+              ]
           },
           "progress": 100,
           "minRam": 0,
