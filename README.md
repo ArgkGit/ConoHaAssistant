@@ -161,6 +161,9 @@ curl -i -X POST \
 ${Compute ServiceのURL}/servers/${サーバID}/action
 ```
 
+> https://support.conoha.jp/v/saveimages/  
+> VPS作成および追加ディスク作成に利用されず、90日を経過したイメージは削除対象となります。
+
 ## イメージIDの取得
 
 > 参考 : https://www.conoha.jp/docs/compute-get_images_list.php
