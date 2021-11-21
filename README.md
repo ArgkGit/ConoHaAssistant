@@ -1,222 +1,74 @@
 # ConoHaAssistant
 
-## リクエスト実施時に必要な情報
+ConoHa APIを用いたサーバの作成や削除などをコマンド操作で実現します。
 
-* https://www.conoha.jp/login/ からログイン > `API`
+## 初期設定
+
+https://manage.conoha.jp/API/ に表示されるAPI情報を登録します。  
+登録した情報は `json/auth.json` `json/endpoint.json` に保存されます。  
+セキュリティの観点から、保存されたファイルの管理にはご注意ください。
+
+```
+$ git clone https://github.com/Bioliss/ConoHaAssistant.git
+$ cd ConoHaAssistant/src
+$ python3 setup.py
+```
 
 ## トークン取得
 
-> 参考 : https://support.conoha.jp/v/apitokens/
+> 参考  
+> https://support.conoha.jp/v/apitokens/  
+> https://www.conoha.jp/docs/identity-post_tokens.php  
 
+APIを使用するためにトークンを取得します。  
+取得した情報は `json/tokens.json` に保存されます。  
+トークンには24時間の有効期限があります。
 
-* リクエスト
-  ```
-   # curl -i -X POST -H "Accept: application/json" \
-  -d '{ "auth": { "passwordCredentials": { "username": "APIユーザーのユーザー名", "password": "APIユーザーのパスワード" }, "tenantId": "テナント情報のテナントID" } }' \
-  ${Identity ServiceのURL}/tokens > tokens.json
-  ```
-* レスポンス
-  ```json
-  {
-      "access": {
-          "token": {
-              "issued_at": "2021-11-20T14:54:41.643491",
-              "expires": "2021-11-21T14:54:41Z",
-              "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-              "tenant": {
-              },
-              "audit_ids": [
-              ]
-          },
-          "serviceCatalog": [
-          ],
-          "user": {
-          },
-          "metadata": {
-          }
-      }
-  }
-  ```
-  
-## VPSのプラン一覧取得
+```
+$ python3 identitiy.py post_tokens
+```
 
-> 参考 : https://www.conoha.jp/docs/compute-get_flavors_detail.php
+## サーバー作成
 
-* リクエスト
-  ```
-  curl -i -X GET \
-  -H "Accept: application/json" \
-  -H "X-Auth-Token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
-  ${Compute ServiceのURL}/flavors/detail > flavors_detail.json
-  ```
-  
-* レスポンス
-  ```json
-  {
-      "flavors": [
-          {
-              "name": "g-c1m512d30",
-              "links": [
-              ],
-              "ram": 512,
-              "OS-FLV-DISABLED:disabled": false,
-              "vcpus": 1,
-              "swap": "",
-              "os-flavor-access:is_public": true,
-              "rxtx_factor": 1,
-              "OS-FLV-EXT-DATA:ephemeral": 0,
-              "disk": 30,
-              "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          },
-          {
-              "name": "g-512mb",
-              "links": [
-              ],
-              "ram": 512,
-              "OS-FLV-DISABLED:disabled": false,
-              "vcpus": 1,
-              "swap": "",
-              "os-flavor-access:is_public": true,
-              "rxtx_factor": 1,
-              "OS-FLV-EXT-DATA:ephemeral": 0,
-              "disk": 20,
-              "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          }
-      ]
-  }
-  ```
-  `name`の末尾に`d30`または`d100`とついているプランが現プラン。(2021/11/21時点)
+> 参考  
+> https://www.conoha.jp/docs/compute-create_vm.php  
 
-## サーバー追加
+`create_image`コマンドで作成したイメージを利用してサーバを作成します。  
+作成されたサーバの情報は `json/created_server.json` に保存されます。  
+作成される度に上書きされるため、コマンドライン操作できるのは最後に作成されたサーバのみです。  
 
-> 参考 : https://www.conoha.jp/docs/compute-create_vm.php
-
-* リクエスト
-  ```
-  curl -i -X POST \
-  -H "Accept: application/json" \
-  -H "X-Auth-Token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
-  -d '{"server": {"adminPass": "rootパスワード","imageRef": "${イメージID}","flavorRef": "${VPSのプランに紐づくID"}' \
-  ${Compute ServiceのURL}/servers
-  ```
-
-## サーバID取得
-
-> 参考 : https://www.conoha.jp/docs/compute-get_vms_list.php
-
-* リクエスト
-  ```
-  curl -i -X GET \
-  -H "Accept: application/json" \
-  -H "X-Auth-Token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
-  ${Compute ServiceのURL}/servers > servers.json
-  ```
-
-* レスポンス
-  ```json
-  {
-      "servers": [
-          {
-              "id": "${サーバID}",
-              "links": [
-                  {
-                      "href": "https://compute.tyo1.conoha.io/v2/${テナントID}/servers/${サーバID}",
-                      "rel": "self"
-                  },
-                  {
-                      "href": "https://compute.tyo1.conoha.io/${テナントID}/servers/${サーバID}",
-                      "rel": "bookmark"
-                  }
-              ],
-              "name": "${IPアドレス(ハイフン区切り)}"
-          }
-      ]
-  }
-  ```
+```
+$ python3 compute.py create_vm
+```
 
 ## サーバシャットダウン
 
-> 参考 : https://www.conoha.jp/docs/compute-stop_cleanly_vm.php
+> 参考  
+> https://www.conoha.jp/docs/compute-stop_cleanly_vm.php  
 
-* リクエスト
-  ```
-  curl -i -X POST \
-  -H "Accept: application/json" \
-  -H "X-Auth-Token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
-  -d '{"os-stop": null}' \
-  ${Compute ServiceのURL}/servers/${サーバID}/action
-  ```
+`create_vm`コマンドで作成したサーバをシャットダウンします。
+```
+$ python3 compute.py stop_cleanly_vm
+```
   
 ## イメージ保存
 
-> 参考 : https://www.conoha.jp/docs/compute-create_image.php
+> 参考  
+> https://www.conoha.jp/docs/compute-create_image.php  
+> https://support.conoha.jp/v/saveimages/    
 
-* リクエスト
+作成したサーバのイメージを保存します。  
+イメージを保存するにはサーバをシャットダウンする必要があります。
+保存したイメージをサーバの作成等に90日間利用されなかった場合は削除対象となります。(有料オプション契約時は除く)  
+
 ```
-curl -i -X POST \
--H "Accept: application/json" \
--H "Content-Type: application/json" \
--H "X-Auth-Token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
--d '{"createImage": {"name": "${イメージ名}"}}' \
-${Compute ServiceのURL}/servers/${サーバID}/action
+$ python3 compute.py create_image
 ```
-
-> https://support.conoha.jp/v/saveimages/  
-> VPS作成および追加ディスク作成に利用されず、90日を経過したイメージは削除対象となります。
-
-## イメージIDの取得
-
-> 参考 : https://www.conoha.jp/docs/compute-get_images_list.php
-
-* リクエスト
-  ```
-  curl -i -X GET \
-  -H "Accept: application/json" \
-  -H "X-Auth-Token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
-  ${Compute ServiceのURL}/images
-  ```
-
-* レスポンス
-  ```json
-  {
-      "images": [
-          {
-              "id": "${イメージID}",
-              "links": [
-              ],
-              "name": "Temporary"
-          },
-          {
-              "id": "${イメージID}",
-              "links": [
-              ],
-              "name": "vmi-lamp-latest-ubuntu-20.04-amd64-100gb"
-          },
-          {
-              "id": "${イメージID}",
-              "links": [
-              ],
-              "name": "vmi-lamp-latest-ubuntu-20.04-amd64"
-          },
-          {
-              "id": "${イメージID}",
-              "links": [
-              ],
-              "name": "vmi-lamp-latest-ubuntu-20.04-amd64-30gb"
-          },
-          {
-              "id": "${イメージID}",
-              "links": [
-              ],
-              "name": "vmi-lamp-latest-ubuntu-20.04-amd64-20gb"
-          }
-      ]
-  }
-  ```
 
 ## イメージ保存のステータス取得
 
-> 参考 : https://www.conoha.jp/docs/compute-get_images_detail_specified.php
+> 参考  
+> https://www.conoha.jp/docs/compute-get_images_detail_specified.php
 
 * リクエスト
   ```
@@ -260,13 +112,11 @@ ${Compute ServiceのURL}/servers/${サーバID}/action
 
 ## サーバ削除
 
-> 参考 : https://www.conoha.jp/docs/compute-delete_vm.php
+> 参考  
+> https://www.conoha.jp/docs/compute-delete_vm.php
 
-* リクエスト
+`create_vm`コマンドで作成したサーバを削除します。
 
-  ```
-  curl -i -X DELETE \
-  -H "Accept: application/json" \
-  -H "X-Auth-Token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
-  ${Compute ServiceのURL}/servers/${サーバID}
-  ```
+```
+python compute.py delete_vm
+```
