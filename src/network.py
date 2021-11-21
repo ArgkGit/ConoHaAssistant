@@ -7,16 +7,8 @@ import datetime
 import identitiy
 
 endpoint_dict = json.load(open('json/endpoint.json', 'r'))
-tokens_dict = json.load(open('json/tokens.json', 'r'))
-
-# トークンが有効期限内か確認
-dt_now = datetime.datetime.now()
-dt_expires = datetime.datetime.fromisoformat(tokens_dict['access']['token']['expires'].replace('Z', '+00:00') )
-if dt_expires.astimezone() < dt_now.astimezone() :
-  tokens_dict = identitiy.post_tokens()
-
 headers = {
-  "X-Auth-Token": tokens_dict['access']['token']['id']
+  "X-Auth-Token": identitiy.get_token_id('json/tokens.json')
 }
 
 def get_secgroups_list(args):

@@ -3,13 +3,21 @@
 import requests
 import json
 import argparse
+import datetime
 
 auth_dict = json.load(open('json/auth.json', 'r'))
 endpoint_dict = json.load(open('json/endpoint.json', 'r'))
-tokens_dict = json.load(open('json/tokens.json', 'r'))
-headers = {
-  "X-Auth-Token": tokens_dict['access']['token']['id']
-}
+
+def get_token_id(json_path):
+  tokens_dict = json.load(open(json_path, 'r'))
+  
+  # トークンが有効期限内か確認
+  dt_now = datetime.datetime.now()
+  dt_expires = datetime.datetime.fromisoformat(tokens_dict['access']['token']['expires'].replace('Z', '+00:00') )
+  if dt_expires.astimezone() < dt_now.astimezone() :
+    tokens_dict = post_tokens()
+
+  return tokens_dict['access']['token']['id']
 
 def post_tokens():
   url = endpoint_dict['IdentityService'] + '/tokens'
