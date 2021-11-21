@@ -1,7 +1,8 @@
 # ConoHaAssistant
 
-ConoHa APIを用いたサーバの作成や削除などをコマンド操作で実現します。   
-https://manage.conoha.jp/ServiceImage/ のイメージリストに表示されるイメージを利用します。
+ConoHa APIを用いて、サーバの削除や作成(復元)をコマンド操作で実現します。   
+使用していない時間帯は自動的にサーバを削除し、利用料金を節約することを目的に開発しました。  
+サーバー作成の際は https://manage.conoha.jp/ServiceImage/ のイメージリストに表示されるイメージを利用します。
 
 ## 初期設定
 
