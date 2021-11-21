@@ -34,8 +34,9 @@ $ python3 identitiy.py post_tokens
 > 参考  
 > https://www.conoha.jp/docs/compute-create_vm.php  
 
-作成されたサーバの情報は `json/created_server.json` に保存されます。  
-作成される度に上書きされるため、コマンドライン操作できるのは最後に作成されたサーバのみです。  
+作成時に指定した値の情報は `json/create_vm_conf.json` に保存され、次回実行時に使用されます。  
+作成されたサーバの情報は `json/created_server.json` に保存され、以降のコマンドで使用されます。  
+`json/created_server.json` はサーバー作成の度に上書きされるため、コマンド操作できるのは最後に作成されたサーバのみです。  
 
 ```
 $ python3 compute.py create_vm
@@ -64,6 +65,13 @@ $ python3 compute.py stop_cleanly_vm
 ```
 $ python3 compute.py create_image
 ```
+
+イメージ名をコマンド引数で指定することもできます。  
+指定しなかった場合は実行中に入力を求められます。
+```
+$ python3 compute.py create_image -name Temporary
+```
+
 
 ## サーバ削除
 
