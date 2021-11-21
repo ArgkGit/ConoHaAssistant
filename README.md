@@ -1,6 +1,7 @@
 # ConoHaAssistant
 
-ConoHa APIを用いたサーバの作成や削除などをコマンド操作で実現します。
+ConoHa APIを用いたサーバの作成や削除などをコマンド操作で実現します。   
+https://manage.conoha.jp/ServiceImage/ のイメージリストに表示されるイメージを使用します。
 
 ## 初期設定
 
@@ -33,7 +34,6 @@ $ python3 identitiy.py post_tokens
 > 参考  
 > https://www.conoha.jp/docs/compute-create_vm.php  
 
-`create_image`コマンドで作成したイメージを利用してサーバを作成します。  
 作成されたサーバの情報は `json/created_server.json` に保存されます。  
 作成される度に上書きされるため、コマンドライン操作できるのは最後に作成されたサーバのみです。  
 
@@ -57,9 +57,9 @@ $ python3 compute.py stop_cleanly_vm
 > https://www.conoha.jp/docs/compute-create_image.php  
 > https://support.conoha.jp/v/saveimages/    
 
-作成したサーバのイメージを保存します。  
-イメージを保存するにはサーバをシャットダウンする必要があります。
-保存したイメージをサーバの作成等に90日間利用されなかった場合は削除対象となります。(有料オプション契約時は除く)  
+`create_vm`コマンドで作成したサーバのイメージを保存します。  
+イメージを保存するにはサーバをシャットダウンする必要があります。  
+保存したイメージが90日間利用されなかった場合は削除対象となります。(有料オプション契約時は除く)  
 
 ```
 $ python3 compute.py create_image
