@@ -13,7 +13,7 @@
   ```
    # curl -i -X POST -H "Accept: application/json" \
   -d '{ "auth": { "passwordCredentials": { "username": "APIユーザーのユーザー名", "password": "APIユーザーのパスワード" }, "tenantId": "テナント情報のテナントID" } }' \
-  "Identity ServiceのURLの後ろに/tokensを繋げる" > tokens.json
+  ${Identity ServiceのURL}/tokens > tokens.json
   ```
 * レスポンス
   ```json
@@ -47,7 +47,7 @@
   curl -i -X GET \
   -H "Accept: application/json" \
   -H "X-Auth-Token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
-  "Compute ServiceのURLの後ろに/flavors/detailを繋げる" > flavors_detail.json
+  ${Compute ServiceのURL}/flavors/detail > flavors_detail.json
   ```
   
 * レスポンス
@@ -127,5 +127,66 @@ TODO: imageRef 設定値の取得方法
   -H "Accept: application/json" \
   -H "X-Auth-Token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
   -d '{"server": {"adminPass": "rootパスワード","imageRef": "","flavorRef": "VPSのプランに紐づくID"}}' \
-  https://compute.tyo1.conoha.io/v2/1864e71d2deb46f6b47526b69c65a45d/servers
+  ${Compute ServiceのURL}/servers
   ```
+
+## サーバID取得
+
+> 参考 : https://www.conoha.jp/docs/compute-get_vms_list.php
+
+* リクエスト
+  ```
+  curl -i -X GET \
+  -H "Accept: application/json" \
+  -H "X-Auth-Token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+  ${Compute ServiceのURL}/servers > servers.json
+  ```
+
+* レスポンス
+  ```json
+  {
+      "servers": [
+          {
+              "id": "${サーバID}",
+              "links": [
+                  {
+                      "href": "https://compute.tyo1.conoha.io/v2/${テナントID}/servers/${サーバID}",
+                      "rel": "self"
+                  },
+                  {
+                      "href": "https://compute.tyo1.conoha.io/${テナントID}/servers/${サーバID}",
+                      "rel": "bookmark"
+                  }
+              ],
+              "name": "${IPアドレス(ハイフン区切り)}"
+          }
+      ]
+  }
+  ```
+
+## サーバシャットダウン
+
+> 参考 : https://www.conoha.jp/docs/compute-stop_cleanly_vm.php
+
+* リクエスト
+  ```
+  curl -i -X POST \
+  -H "Accept: application/json" \
+  -H "X-Auth-Token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+  -d '{"os-stop": null}' \
+  ${Compute ServiceのURL}/servers/${サーバID}/action
+  ```
+  
+## イメージ保存
+
+> 参考 : https://www.conoha.jp/docs/compute-create_image.php
+
+* リクエスト
+```
+curl -i -X POST \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "X-Auth-Token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+-d '{"createImage": {"name": "${イメージ名}"}}' \
+${Compute ServiceのURL}/servers/${サーバID}/action
+```
