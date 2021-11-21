@@ -1,7 +1,7 @@
 # ConoHaAssistant
 
 ConoHa APIを用いたサーバの作成や削除などをコマンド操作で実現します。   
-https://manage.conoha.jp/ServiceImage/ のイメージリストに表示されるイメージを使用します。
+https://manage.conoha.jp/ServiceImage/ のイメージリストに表示されるイメージを利用します。
 
 ## 初期設定
 
@@ -21,9 +21,8 @@ $ python3 setup.py
 > https://support.conoha.jp/v/apitokens/  
 > https://www.conoha.jp/docs/identity-post_tokens.php  
 
-APIを使用するためにトークンを取得します。  
+APIを使用するためにトークンを取得します。(24時間の有効期限あり)  
 取得した情報は `json/tokens.json` に保存されます。  
-トークンには24時間の有効期限があります。
 
 ```
 $ python3 identitiy.py post_tokens
@@ -60,18 +59,16 @@ $ python3 compute.py stop_cleanly_vm
 
 `create_vm`コマンドで作成したサーバのイメージを保存します。  
 イメージを保存するにはサーバをシャットダウンする必要があります。  
-保存したイメージが90日間利用されなかった場合は削除対象となります。(有料オプション契約時は除く)  
+保存したイメージが90日間利用されなかった場合はConoHaの仕様により削除されます。(有料オプション契約時は除く)  
 
 ```
 $ python3 compute.py create_image
 ```
 
-イメージ名をコマンド引数で指定することもできます。  
-指定しなかった場合は実行中に入力を求められます。
+事前にイメージ名を`-name`オプションでで指定することもできます。  
 ```
 $ python3 compute.py create_image -name Temporary
 ```
-
 
 ## サーバ削除
 
