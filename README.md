@@ -260,11 +260,13 @@ ${Compute ServiceのURL}/servers/${サーバID}/action
 
 ## サーバ削除
 
+> 参考 : https://www.conoha.jp/docs/compute-delete_vm.php
+
 * リクエスト
 
   ```
   curl -i -X DELETE \
   -H "Accept: application/json" \
   -H "X-Auth-Token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
-  ${Compute ServiceのURL}/${サーバID}
+  ${Compute ServiceのURL}/servers/${サーバID}
   ```
