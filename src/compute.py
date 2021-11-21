@@ -5,6 +5,7 @@ import json
 import argparse
 import datetime
 import time
+import os
 
 import identitiy
 import network
@@ -42,32 +43,44 @@ def get_vms_detail_specified():
   return requests.get(endpoint_dict['ComputeService'] + '/servers/' + created_server_dict['server']['id'], headers=headers).json()
 
 def create_vm(args):
-  images_dict = get_images()
-  for image_dict in images_dict['images']:
-    # デフォルトで用意されているイメージは除く
-    if "vmi-" in image_dict['name']: continue
+  conf_path = 'json/create_vm_conf.json'
+  if os.path.isfile(conf_path):
+    create_vm_conf_dict = json.load(open(conf_path, 'r'))
+  else:
+    images_dict = get_images()
+    for image_dict in images_dict['images']:
+      # デフォルトで用意されているイメージは除く
+      if "vmi-" in image_dict['name']: continue
 
-    print("----------")
-    print("イメージID: " + image_dict['id'])
-    print("イメージ名: " + image_dict['name'])
+      print("イメージID: " + image_dict['id'])
+      print("イメージ名: " + image_dict['name'])
+      print("----------")
 
-  image_id = input('使用したいイメージID: ')
+    image_id = input('使用したいイメージID: ')
 
-  flavors_detail_dict = get_flavors_detail()
-  for flavor_dict in flavors_detail_dict['flavors']:
-    # 旧プランはスキップ
-    if flavor_dict['disk'] == 20: continue
-    if flavor_dict['disk'] == 50: continue
-    print("----------")
-    print("プランID: " + flavor_dict['id'])
-    print("メモリ: " + str(flavor_dict['ram']) + "MB, CPU: " + str(flavor_dict['vcpus']) + "コア, ディスク容量: " +  str(flavor_dict['disk']) + "GB")
+    flavors_detail_dict = get_flavors_detail()
+    for flavor_dict in flavors_detail_dict['flavors']:
+      # 旧プランはスキップ
+      if flavor_dict['disk'] == 20: continue
+      if flavor_dict['disk'] == 50: continue
+      print("プランID: " + flavor_dict['id'])
+      print("メモリ: " + str(flavor_dict['ram']) + "MB, CPU: " + str(flavor_dict['vcpus']) + "コア, ディスク容量: " +  str(flavor_dict['disk']) + "GB")
+      print("----------")
 
-  plan_id = input('使用したいプランID: ')
+    plan_id = input('使用したいプランID: ')
+
+    create_vm_conf_dict = {
+      'image_id':image_id,
+      'plan_id':plan_id
+    }
+
+    with open(conf_path, 'w') as f:
+      json.dump(create_vm_conf_dict, f, indent=4)
 
   server_dict = {
     "server": {
-        "imageRef": image_id,
-        "flavorRef": plan_id
+        "imageRef": create_vm_conf_dict['image_id'],
+        "flavorRef": create_vm_conf_dict['plan_id']
     }
   }
 
@@ -90,10 +103,26 @@ def create_vm(args):
 def stop_cleanly_vm(args):
   created_server_dict = json.load(open('json/created_server.json', 'r'))
   url = endpoint_dict['ComputeService'] + '/servers/' + created_server_dict['server']['id'] +'/action'
-  print(requests.post(url, data = '{"os-stop": null}', headers=headers))
+  res = requests.post(url, data = '{"os-stop": null}', headers=headers)
+  if res.status_code != 202: 
+    print(res.reason)
+    return
+
+  # ステータスがSHUTOFF(停止)になるまでポーリング(最大5分)
+  print('停止処理中', end='', flush=True)
+  for index in range(30):
+    vms_detail_dict = get_vms_detail_specified()
+    if vms_detail_dict['server']['status'] == 'SHUTOFF':
+      break
+    print('.', end='', flush=True)
+    time.sleep(10)
+  print('停止しました', end='')
 
 def create_image(args):
-  image_name = input('イメージ名: ')
+  if args.name is not None:
+    image_name = args.name
+  else:
+    image_name = input('イメージ名: ')
   created_server_dict = json.load(open('json/created_server.json', 'r'))
   url = endpoint_dict['ComputeService'] + '/servers/' + created_server_dict['server']['id'] +'/action'
 
@@ -131,6 +160,7 @@ if __name__ == '__main__':
     parser_create_vm.set_defaults(handler=create_vm)
     parser_stop_cleanly_vm.set_defaults(handler=stop_cleanly_vm)
     parser_create_image.set_defaults(handler=create_image)
+    parser_create_image.add_argument('-name', type=str, metavar='Temporary', help='イメージ名')
     parser_delete_vm.set_defaults(handler=delete_vm)
     
     args = parser.parse_args()
