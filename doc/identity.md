@@ -11,5 +11,5 @@ Identity API を用いた操作は`identity.py`にて実現します。
 取得した情報は `json/tokens.json` に保存されます。  
 
 ```
-$ python3 identitiy.py post_tokens
+$ python3 identity.py post_tokens
 ```
