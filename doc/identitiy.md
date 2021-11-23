@@ -1,6 +1,6 @@
 # Identity API 関連
 
-Identity API を用いた操作は [identity.py](../../src/identity.py) にて実現します。
+Identity API を用いた操作は`identity.py`にて実現します。
 
 ## `post_tokens`
 

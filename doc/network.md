@@ -1,6 +1,6 @@
 # Network API 関連
 
-Network API を用いた操作は [network.py](../../src/network.py) にて実現します。  
+Network API を用いた操作は`network.py`にて実現します。  
 APIを使用するためには、[identityモジュール](identity.md)の`post_tokens`で、トークンを取得しておく必要があります。
 
 ## `create_secgroup`
