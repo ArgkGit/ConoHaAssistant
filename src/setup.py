@@ -41,7 +41,7 @@ if __name__ == '__main__':
     'NetworkService':NetworkService
   }
 
-  os.makedirs(json, exist_ok=True)
+  os.makedirs('json', exist_ok=True)
   with open('json/auth.json', 'w') as f:
     json.dump(auth_dict, f, indent=4)
   with open('json/endpoint.json', 'w') as f:
