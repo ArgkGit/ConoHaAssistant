@@ -15,6 +15,19 @@ headers = {
   "X-Auth-Token": identity.get_token_id('json/tokens.json')
 }
 
+def polling(start_msg, end_msg, key, val, handler, args=None):
+  print(start_msg, end='', flush=True)
+  for index in range(30):
+    if args is None:
+      dict = handler()
+    else:
+      dict = handler(args)
+    if dict[key[0]][key[1]] == val:
+      break
+    print('.', end='', flush=True)
+    time.sleep(10)
+  print(end_msg, end='')
+
 def get_flavors_detail():
   return requests.get(endpoint_dict['ComputeService'] + '/flavors/detail', headers=headers).json()
 
@@ -101,15 +114,7 @@ def create_vm(args):
   with open('json/created_server.json', 'w') as f:
     json.dump(created_server_dict, f, indent=4)
 
-  # ステータスがACTIVE(起動中)になるまでポーリング(最大5分)
-  print('構築中', end='', flush=True)
-  for index in range(30):
-    vms_detail_dict = get_vms_detail_specified()
-    if vms_detail_dict['server']['status'] == 'ACTIVE':
-      break
-    print('.', end='', flush=True)
-    time.sleep(10)
-  print('起動しました', end='')
+  polling('構築中', '起動しました', ['server', 'status'], 'ACTIVE', get_vms_detail_specified)
 
 def stop_cleanly_vm(args):
   created_server_dict = json.load(open('json/created_server.json', 'r'))
@@ -119,15 +124,7 @@ def stop_cleanly_vm(args):
     print(res.reason)
     return
 
-  # ステータスがSHUTOFF(停止)になるまでポーリング(最大5分)
-  print('停止処理中', end='', flush=True)
-  for index in range(30):
-    vms_detail_dict = get_vms_detail_specified()
-    if vms_detail_dict['server']['status'] == 'SHUTOFF':
-      break
-    print('.', end='', flush=True)
-    time.sleep(10)
-  print('停止しました', end='')
+  polling('停止処理中', '停止しました', ['server', 'status'], 'SHUTOFF', get_vms_detail_specified)
 
 def create_image(args):
   if args.name is not None:
@@ -143,15 +140,7 @@ def create_image(args):
     return
 
   image_id = get_image_id(image_name)
-  # ステータスがACTIVE(利用可能)になるまでポーリング(最大5分)
-  print('保存中', end='', flush=True)
-  for index in range(30):
-    image_detail_dict = get_images_detail_specified(image_id)
-    if image_detail_dict['image']['status'] == 'ACTIVE':
-      break
-    print('.', end='', flush=True)
-    time.sleep(10)
-  print('イメージが利用可能になりました')
+  polling('保存中', 'イメージが利用可能になりました', ['image', 'status'], 'ACTIVE', get_images_detail_specified, image_id)
 
 def delete_vm(args):
   created_server_dict = json.load(open('json/created_server.json', 'r'))
