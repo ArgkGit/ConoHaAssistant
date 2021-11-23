@@ -17,6 +17,6 @@ $ python3 setup.py
 
 ## ドキュメント
 
-* [Identity API 関連](doc/identitiy.md)
+* [Identity API 関連](doc/identity.md)
 * [Compute API 関連](doc/compute.md)
 * [Network API 関連](doc/network.md)
