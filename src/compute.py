@@ -7,12 +7,12 @@ import argparse
 import time
 import os
 
-import identitiy
+import identity
 import network
 
 endpoint_dict = json.load(open('json/endpoint.json', 'r'))
 headers = {
-  "X-Auth-Token": identitiy.get_token_id('json/tokens.json')
+  "X-Auth-Token": identity.get_token_id('json/tokens.json')
 }
 
 def get_flavors_detail():

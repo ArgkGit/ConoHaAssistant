@@ -4,11 +4,11 @@ import requests
 import json
 import argparse
 import datetime
-import identitiy
+import identity
 
 endpoint_dict = json.load(open('json/endpoint.json', 'r'))
 headers = {
-  "X-Auth-Token": identitiy.get_token_id('json/tokens.json')
+  "X-Auth-Token": identity.get_token_id('json/tokens.json')
 }
 
 def get_secgroups_list():
