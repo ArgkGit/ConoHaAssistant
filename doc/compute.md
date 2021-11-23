@@ -1,6 +1,6 @@
 # Compute API 関連
 
-Compute API を用いた操作は [compute.py](../src/compute.py) にて実現します。  
+Compute API を用いた操作は [compute.py](../../src/compute.py) にて実現します。  
 APIを使用するためには、[identityモジュール](identity.md)の`post_tokens`で、トークンを取得しておく必要があります。
 
 ## `create_vm`
