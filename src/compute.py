@@ -61,9 +61,23 @@ def create_vm(args):
 
     plan_id = input('使用したいプランID: ')
 
+    security_groups_dict = network.get_secgroups_list()
+
+    with open('json/security_groups.json', 'w') as f:
+      json.dump(security_groups_dict, f, indent=4)
+
+    print('セキュリティグループ一覧')
+    print("----------")
+    for security_group_dict in security_groups_dict['security_groups']:
+      print(security_group_dict['name'])
+    print("----------")
+
+    secgroup_name = input('使用したいセキュリティグループ名: ')
+
     create_vm_conf_dict = {
       'image_id':image_id,
-      'plan_id':plan_id
+      'plan_id':plan_id,
+      'secgroup_name':secgroup_name
     }
 
     with open(conf_path, 'w') as f:
@@ -72,7 +86,12 @@ def create_vm(args):
   server_dict = {
     "server": {
         "imageRef": create_vm_conf_dict['image_id'],
-        "flavorRef": create_vm_conf_dict['plan_id']
+        "flavorRef": create_vm_conf_dict['plan_id'],
+        "security_groups": [
+            {
+                "name": create_vm_conf_dict['secgroup_name']
+            }
+        ]
     }
   }
 
